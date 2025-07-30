@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017/phx_mongo
+      - SECRET_KEY_BASE=supersecretkeybase12345678901234567890123456789012345678
+    ports:
+      - "4000:4000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+  mongo:
+    image: mongo:6
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      retries: 5
