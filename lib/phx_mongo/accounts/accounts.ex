@@ -1,7 +1,8 @@
 defmodule PhxMongo.Accounts do
   alias PhxMongo.Accounts.User
-
   @coll "users"
+
+  alias Pbkdf2
 
   def list_users do
     Mongo.find(:mongo, @coll, %{})
@@ -21,23 +22,21 @@ defmodule PhxMongo.Accounts do
     user_doc = %{
       name: attrs["name"],
       email: attrs["email"],
-      password_hash: Bcrypt.hash_pwd_salt(attrs["password"]),
+      password_hash: Pbkdf2.hash_pwd_salt(attrs["password"]),
       inserted_at: now,
       updated_at: now
     }
 
     case Mongo.insert_one(:mongo, @coll, user_doc) do
-      {:ok, %Mongo.InsertOneResult{inserted_id: id}} ->
-        get_user(id)
-
-      {:error, reason} ->
-        {:error, reason}
+      {:ok, %Mongo.InsertOneResult{inserted_id: id}} -> get_user(id)
+      {:error, reason} -> {:error, reason}
     end
   end
 
   def update_user(id, attrs) do
     updates =
-      Enum.into(attrs, %{}, fn {k, v} -> {String.to_atom(k), v} end)
+      attrs
+      |> Enum.into(%{}, fn {k, v} -> {String.to_atom(k), v} end)
       |> Map.put(:updated_at, DateTime.utc_now() |> DateTime.truncate(:second))
 
     Mongo.update_one(:mongo, @coll, %{_id: to_object_id(id)}, %{"$set" => updates})
@@ -52,12 +51,13 @@ defmodule PhxMongo.Accounts do
   def authenticate(email, password) do
     case Mongo.find_one(:mongo, @coll, %{email: email}) do
       nil ->
+        Pbkdf2.no_user_verify()
         :error
 
       doc ->
         user = bson_to_user(doc)
 
-        if Bcrypt.verify_pass(password, user.password_hash) do
+        if Pbkdf2.verify_pass(password, user.password_hash) do
           {:ok, user}
         else
           :error
