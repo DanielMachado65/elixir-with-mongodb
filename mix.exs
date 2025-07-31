@@ -27,6 +27,7 @@ defmodule PhxMongo.MixProject do
       {:phoenix, "~> 1.7"},
       {:phoenix_pubsub, "~> 2.1"},
       {:phoenix_view, "~> 2.0"},
+      {:bcrypt_elixir, "~> 3.0"},
       {:plug_cowboy, "~> 2.6"},
       {:jason, "~> 1.4"},
       {:mongodb_driver, "~> 0.9"},
