@@ -18,7 +18,7 @@ defmodule PhxMongo.Accounts do
   def create_user(attrs) do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
 
-    user = %{
+    user_doc = %{
       name: attrs["name"],
       email: attrs["email"],
       password_hash: Bcrypt.hash_pwd_salt(attrs["password"]),
@@ -26,8 +26,13 @@ defmodule PhxMongo.Accounts do
       updated_at: now
     }
 
-    {:ok, %{"inserted_id" => id}} = Mongo.insert_one(:mongo, @coll, user)
-    get_user(id)
+    case Mongo.insert_one(:mongo, @coll, user_doc) do
+      {:ok, %Mongo.InsertOneResult{inserted_id: id}} ->
+        get_user(id)
+
+      {:error, reason} ->
+        {:error, reason}
+    end
   end
 
   def update_user(id, attrs) do

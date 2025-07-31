@@ -1,0 +1,53 @@
+# Login
+
+POST http://localhost:4000/api/login
+Content-Type: application/json
+
+{
+  "email": "daniel@acme.inc",
+  "password": "Password1!"
+}
+
+###
+
+# List users
+
+GET http://localhost:4000/api/users
+
+###
+
+# Create user
+
+POST http://localhost:4000/api/users
+Content-Type: application/json
+
+{
+  "name": "Daniel Machado",
+  "email": "daniel@acme.inc",
+  "password": "Password1!"
+}
+
+###
+
+# Get user
+
+GET http://localhost:4000/api/users/5f8d9f0a2d95f4a6f1c2e5c1
+
+###
+
+# Update user
+
+PUT http://localhost:4000/api/users/5f8d9f0a2d95f4a6f1c2e5c1
+Content-Type: application/json
+
+{
+  "name": "Daniel Machado Pintos",
+  "email": "daniel@acme.inc",
+  "password": "Password1!"
+}
+
+###
+
+# Delete user
+
+DELETE http://localhost:4000/api/users/5f8d9f0a2d95f4a6f1c2e5c1

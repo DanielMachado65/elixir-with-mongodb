@@ -1,0 +1,13 @@
+FROM elixir:1.15-alpine AS dev
+
+RUN apk add --no-cache build-base cmake git bash inotify-tools nodejs npm
+
+WORKDIR /app
+ENV MIX_ENV=dev
+
+COPY mix.exs mix.lock ./
+RUN mix local.hex --force && mix deps.get
+
+COPY . .
+
+CMD ["sh", "-c", "mix deps.get && mix phx.server"]

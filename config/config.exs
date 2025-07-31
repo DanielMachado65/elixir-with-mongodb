@@ -7,3 +7,4 @@ config :phx_mongo, PhxMongoWeb.Endpoint,
   live_view: [signing_salt: "SALTSALT"]
 
 config :phoenix, :json_library, Jason
+import_config "#{config_env()}.exs"
